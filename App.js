@@ -1,21 +1,26 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import Navigation from './Screens/Navigation';
+import { NativeBaseProvider , View } from 'native-base';
+import { useState, useEffect } from 'react';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+	const [coins, setCoins] = useState([]);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+	const getData = async () => {
+		const response = await fetch(
+			`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false`
+		);
+		const data = await response.json();
+		setCoins(data);
+	};
+
+	useEffect(() => {
+		getData();
+	}, []);
+
+	return (
+		<NativeBaseProvider>
+			<Navigation coins={coins} />
+		</NativeBaseProvider>
+	);
+}
